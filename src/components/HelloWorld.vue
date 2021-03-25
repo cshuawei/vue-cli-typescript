@@ -1,7 +1,7 @@
 <template>
   <div class="hello">
-    <h1>{{params.msg || '--'}}</h1>
-    <p>源数据：{{msg}}</p>
+    <h1>{{params.msg || '--'}}</h1>{{msg}}
+    <p>源数据：{{info}}</p>
     <p>action: <input :value="action" @input="$emit('update:action', $event.target.value)" /></p>
     <p>name: <input v-model="params.name" /> age: <input v-model="params.age" /></p>
     <p>
@@ -19,10 +19,10 @@ import { ConstructorType, Data, HomeData } from 'types'
 // 自定义类装饰器-原生方法
 const NativeClassDecorator = <T extends ConstructorType>(constructor: T) => {
   return class extends constructor {
-    msg: string | number | null = null
+    info: string | number | null = null
     mounted () {
       console.log('NativeClassDecorator')
-      this.msg = '我是重载后的msg'
+      this.info = '我是重载后的msg'
     }
   }
 }
@@ -57,6 +57,7 @@ const MethodDecorator = createDecorator((options, key) => {
 @NativeClassDecorator
 @Options({
   props: {
+    msg: String,
     action: String,
     params: Object,
     paramsModifiers: {
@@ -75,18 +76,19 @@ const MethodDecorator = createDecorator((options, key) => {
   }
 })
 export default class HelloWorld extends Vue {
+  msg!: string
   params!: Data & HomeData
-  msg: string | number | null = null
+  info: string | number | null = null
 
   mounted () {
-    this.msg = 'mounted'
+    this.info = 'mounted'
   }
 
   @MethodDecorator
   @NativeMethodDecorator
   onReset (arg: string) {
     console.log('arg:', arg)
-    this.msg = 'reset'
+    this.info = 'reset'
     this.$emit('reset')
   }
 }
